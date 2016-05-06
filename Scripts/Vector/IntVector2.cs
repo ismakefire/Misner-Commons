@@ -96,6 +96,28 @@ public struct IntVector2 {
 	/// <summary>
 	/// Serves as a hash function for a IntVector2.
 	/// 
+	/// Why this implementaiton over others?
+	/// 
+	/// So the other implementations I've seen and considered are either as fast as possilbe or an even distribution.
+	/// 
+	/// First let's consider our fast implementations. Modern CPUs care more about operation alignment then the
+	/// performance of a single operation, so it's likely that XOR and Multiplication are each faster then a pair of
+	/// operations. Assuming this, I ran some some tests and found Subtraction and Multiplication beats out XOR and
+	/// Addition for small values and positive values. Multiplication has a pretty big flaw with data sets with a
+	/// large number of zeros. So ultimatedly, Subtraction ended up being my favorite choice.
+	/// 
+	/// Next, when looking at even distributions we're clearly gonna do great for chess boards, but what about
+	/// completely noisey values or byte aligned values? For implementations of the form x ^ (y << N), N = 16 feels
+	/// like an easy choise, but you're assuming the complexity of y comes from it's bottom half, which might not be
+	/// the case if we're converting from floats (a common case) or byte packed values (32 bit colors).
+	/// 
+	/// So for me, N = 13 strikes a fair balance between (x ^ (y << 16)) low order perfection and a rotating shift
+	/// implementation of the form (x ^ (y << N) ^ (y >> N)), while also avoiding common byte alignments of 8 bits.
+	/// 
+	/// Finally, combining the solutions into a form such as the following: x - (y << 13), sounds reasonable but
+	/// would be missleading without data supporting it. So I'm sticking with what's a more readable choice unless
+	/// I find further data to do otherwise.
+	/// 
 	/// </summary>
 	/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
 	public override int GetHashCode ()
@@ -110,8 +132,7 @@ public struct IntVector2 {
 	/// <summary>
 	/// Returns a nicely formatted string for this vector.
 	/// </summary>
-	public override string ToString()
-	{
+	public override string ToString() {
 		return string.Format("({0}, {1})", x, y);
 	}
 }
