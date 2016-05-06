@@ -74,11 +74,11 @@ public struct IntVector2 {
 	}
 	
 	public static bool operator ==(IntVector2 left, IntVector2 right) {
-		return (left.x == right.x && left.y == right.y);
+		return EqualsInternal(left, right);
 	}
 	
 	public static bool operator !=(IntVector2 left, IntVector2 right) {
-		return (left.x != right.x || left.y != right.y);
+		return (EqualsInternal(left, right) == false);
 	}
 
 	public override bool Equals(object o) {
@@ -87,7 +87,24 @@ public struct IntVector2 {
 			return false;
 		}
 
-		return (this == (IntVector2)o);
+		IntVector2 left = this;
+		IntVector2 right = (IntVector2)o;
+
+		return EqualsInternal(left, right);
+	}
+
+	/// <summary>
+	/// Serves as a hash function for a IntVector2.
+	/// 
+	/// </summary>
+	/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+	public override int GetHashCode ()
+	{
+		return x ^ (y << 13);
+	}
+
+	private static bool EqualsInternal(IntVector2 left, IntVector2 right) {
+		return (left.x == right.x && left.y == right.y);
 	}
 	
 	/// <summary>
