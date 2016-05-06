@@ -80,6 +80,15 @@ public struct IntVector2 {
 	public static bool operator !=(IntVector2 left, IntVector2 right) {
 		return (left.x != right.x || left.y != right.y);
 	}
+
+	public override bool Equals(object o) {
+
+		if ( !(o is IntVector2) ) {
+			return false;
+		}
+
+		return (this == (IntVector2)o);
+	}
 	
 	/// <summary>
 	/// Returns a nicely formatted string for this vector.
